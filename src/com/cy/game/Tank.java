@@ -1,9 +1,10 @@
 package com.cy.game;
 
 import com.cy.util.Constnt;
-import com.sun.org.apache.bcel.internal.Const;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tank {
     private int x, y;
@@ -20,7 +21,7 @@ public class Tank {
     public static final int STATUS_DEAD = 2;
 
     private int dir;
-
+    private List<Bullit> arrList = new ArrayList();
     public void setDir(int dir) {
         this.dir = dir;
     }
@@ -30,7 +31,7 @@ public class Tank {
     }
 
     private int status;
-
+    private int atk;
     public Tank(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
@@ -40,6 +41,7 @@ public class Tank {
 
     public void drawTank(Graphics g) {
         judgeStatus();
+        drawBullits(g);
         g.fillOval(x, y, width, height);
     }
 
@@ -80,7 +82,35 @@ public class Tank {
                 break;
         }
     }
+    public void fire(){
+         int x = 0;
+         int y = 0;
+        switch (dir){
+            case UP:
+                x = this.x + (width >> 1);
+                y = this.y - (height >> 1);
+                break;
+            case RIGHT:
+                x = this.x + (width >> 1);
+                y = this.y + (height >> 1);
+                break;
+            case DOWN:
+                x = this.x + (width >> 1);
+                y = this.y += (height >> 1);
+                break;
+            case LEFT:
+                x = this.x -= (width >> 1);
+                y = this.y += (height >> 1);
+        }
+        Bullit bullit = new Bullit(x, y, dir, atk);
+        arrList.add(bullit);
 
+    }
+    public void drawBullits(Graphics g){
+        arrList.forEach(item->{
+            item.draw(g);
+        });
+    }
     private void tankStand() {
     }
 
