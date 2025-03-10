@@ -12,7 +12,8 @@ public class GameFrame extends Frame implements Runnable {
     public int status;
     public int menusIndex;
     public Tank tank;
-
+    public static int titleBarH;
+    public static int borderRight;
     public GameFrame() {
         initFrame(Constnt.GAME_TITLE);
         initEvenMonitor();
@@ -26,6 +27,8 @@ public class GameFrame extends Frame implements Runnable {
         setSize(Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT);
         setLocationRelativeTo(null);
         setResizable(false);
+         titleBarH = getInsets().top;
+         borderRight = getInsets().right;
     }
 
     public void initEvenMonitor() {

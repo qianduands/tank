@@ -1,13 +1,14 @@
 package com.cy.game;
 
 import com.cy.util.Constnt;
+import com.sun.org.apache.bcel.internal.Const;
 
 import java.awt.*;
 
 public class Tank {
     private int x, y;
     private int width, height;
-    private int speed = 10;
+    private int speed = 30;
 
     public static final int UP = 0;
     public static final int RIGHT = 1;
@@ -62,17 +63,21 @@ public class Tank {
     private void tankMove() {
         switch (dir) {
             case UP:
-                y -= speed;
+                if(y > GameFrame.titleBarH)  y -= speed;
+               else y = GameFrame.titleBarH;
                 break;
             case RIGHT:
-                x += speed;
+                if(x > Constnt.GAME_WIDTH - GameFrame.borderRight - width + speed) x = Constnt.GAME_WIDTH - GameFrame.borderRight - width;
+                else x += speed;
                 break;
             case DOWN:
-                y += speed;
+                if(y < Constnt.GAME_HEIGHT - height) y += speed;
+                else y = Constnt.GAME_HEIGHT - height;
                 break;
             case LEFT:
-                x -= speed;
-
+                if(x <= width+speed) x = width;
+                else x -= speed;
+                break;
         }
     }
 
