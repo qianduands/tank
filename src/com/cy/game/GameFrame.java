@@ -64,6 +64,11 @@ public class GameFrame extends Frame implements Runnable {
                         break;
                     case KeyEvent.VK_ENTER:
                         gameRun();
+                        break;
+                    case KeyEvent.VK_SPACE:
+                        System.out.println("开火");
+                        tank.fire();
+                        break;
                 }
             }
 
@@ -71,7 +76,8 @@ public class GameFrame extends Frame implements Runnable {
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
-                tank.setStatus(Tank.STATUS_STAND);
+                if (e.getKeyCode() != KeyEvent.VK_SPACE)  tank.setStatus(Tank.STATUS_STAND);
+
             }
         });
     }
