@@ -8,7 +8,7 @@ public class Bullit {
     private int x,y;
     private int dir;
     private int atk;
-    private int speed;
+    private int speed = 10;
     public Bullit(int x, int y, int dir, int atk) {
         this.x = x;
         this.y = y;
@@ -19,16 +19,16 @@ public class Bullit {
     public void logic(){
         switch (dir){
             case Tank.UP :
-                y-=speed;
+                y-= speed;
                 break;
             case Tank.RIGHT:
-                x+=speed;
+                x += speed;
                 break;
             case Tank.DOWN:
-                y+=speed;
+                y += speed;
                 break;
             case Tank.LEFT:
-                x-=speed;
+                x -= speed;
                 break;
         }
     }

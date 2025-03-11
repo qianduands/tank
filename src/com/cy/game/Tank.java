@@ -79,6 +79,7 @@ public class Tank {
             case LEFT:
                 if(x <= width+speed) x = width;
                 else x -= speed;
+                System.out.println(x+","+y);
                 break;
         }
     }
@@ -87,20 +88,20 @@ public class Tank {
          int y = 0;
         switch (dir){
             case UP:
-                x = this.x + (width >> 1);
+                x = this.x;
                 y = this.y - (height >> 1);
                 break;
             case RIGHT:
                 x = this.x + (width >> 1);
-                y = this.y + (height >> 1);
+                y = this.y ;
                 break;
             case DOWN:
-                x = this.x + (width >> 1);
-                y = this.y += (height >> 1);
+                x = this.x ;
+                y = this.y + (height >> 1);
                 break;
             case LEFT:
-                x = this.x -= (width >> 1);
-                y = this.y += (height >> 1);
+                x = this.x - (width >> 1);
+                y = this.y ;
         }
         Bullit bullit = new Bullit(x, y, dir, atk);
         arrList.add(bullit);

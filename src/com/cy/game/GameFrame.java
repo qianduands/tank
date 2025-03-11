@@ -66,7 +66,6 @@ public class GameFrame extends Frame implements Runnable {
                         gameRun();
                         break;
                     case KeyEvent.VK_SPACE:
-                        System.out.println("开火");
                         tank.fire();
                         break;
                 }
