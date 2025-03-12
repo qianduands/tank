@@ -8,7 +8,7 @@ public class Bullit {
     private int x,y;
     private int dir;
     private int atk;
-    private int speed = 10;
+    private int speed = 60;
     public Bullit(int x, int y, int dir, int atk) {
         this.x = x;
         this.y = y;

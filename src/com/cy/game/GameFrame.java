@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
 public class GameFrame extends Frame implements Runnable {
     public int status;
@@ -14,6 +15,7 @@ public class GameFrame extends Frame implements Runnable {
     public Tank tank;
     public static int titleBarH;
     public static int borderRight;
+    private BufferedImage bufferedImage = new BufferedImage(Constnt.GAME_WIDTH,Constnt.GAME_HEIGHT,BufferedImage.TYPE_4BYTE_ABGR);
     public GameFrame() {
         initFrame(Constnt.GAME_TITLE);
         initEvenMonitor();
@@ -95,7 +97,8 @@ public class GameFrame extends Frame implements Runnable {
     }
 
     @Override
-    public void update(Graphics g) {
+    public void update(Graphics g1) {
+        Graphics g = bufferedImage.getGraphics();
         super.update(g);
         switch (this.status) {
             case 0:
@@ -114,6 +117,7 @@ public class GameFrame extends Frame implements Runnable {
                 drawOver(g);
                 break;
         }
+        g1.drawImage(bufferedImage,0,0,null);
     }
 
     private void drawOver(Graphics g) {

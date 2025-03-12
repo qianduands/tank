@@ -32,6 +32,18 @@ public class Tank {
 
     private int status;
     private int atk;
+    public static Image[] tankIamges = new Image[4];
+    public static String[] tankIamgesNames = {
+            "p1tankU.gif",
+            "p1tankR.gif",
+            "p1tankD.gif",
+            "p1tankL.gif",
+    };
+    static {
+        for (int i = 0; i < 4;i++){
+            tankIamges[i] = Toolkit.getDefaultToolkit().createImage("images/player1/"+tankIamgesNames[i]);
+        }
+    }
     public Tank(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
@@ -42,8 +54,10 @@ public class Tank {
     public void drawTank(Graphics g) {
         judgeStatus();
         drawBullits(g);
-        g.fillOval(x, y, width, height);
+//        g.fillOval(x, y, width, height);
+        g.drawImage(tankIamges[dir],x,y,null);
     }
+
 
     private void judgeStatus() {
         switch (status) {
@@ -88,20 +102,20 @@ public class Tank {
          int y = 0;
         switch (dir){
             case UP:
-                x = this.x;
-                y = this.y - (height >> 1);
+                x = this.x  + 20;
+                y = this.y - (tankIamges[0].getHeight(null) >> 1) + 50 + (status == STATUS_MOVE ? -speed : 0) ;
                 break;
             case RIGHT:
-                x = this.x + (width >> 1);
-                y = this.y ;
+                x = this.x + (tankIamges[0].getHeight(null) >> 1)  - 20 + (status == STATUS_MOVE ? +speed : 0 );
+                y = this.y + 20;
                 break;
             case DOWN:
-                x = this.x ;
-                y = this.y + (height >> 1);
+                x = this.x + 20;
+                y = this.y + (tankIamges[0].getHeight(null) >> 1) - 20 + (status == STATUS_MOVE ? +speed : 0);
                 break;
             case LEFT:
-                x = this.x - (width >> 1);
-                y = this.y ;
+                x = this.x - (tankIamges[0].getWidth(null) >> 1)  + 50 + (status == STATUS_MOVE ? -speed : 0);
+                y = this.y + 20;
         }
         Bullit bullit = new Bullit(x, y, dir, atk);
         arrList.add(bullit);
