@@ -1,5 +1,6 @@
 package com.cy.game;
 
+import com.cy.util.BullitPool;
 import com.cy.util.Constnt;
 
 import java.awt.*;
@@ -10,6 +11,7 @@ public class Tank {
     private int x, y;
     private int width, height;
     private int speed = 30;
+
 
     public static final int UP = 0;
     public static final int RIGHT = 1;
@@ -117,14 +119,26 @@ public class Tank {
                 x = this.x - (tankIamges[0].getWidth(null) >> 1)  + 50 + (status == STATUS_MOVE ? -speed : 0);
                 y = this.y + 20;
         }
-        Bullit bullit = new Bullit(x, y, dir, atk);
+//        Bullit bullit = new Bullit(x, y, dir, atk);
+        Bullit bullit = BullitPool.getBullit();
+        bullit.setX(x);
+        bullit.setY(y);
+        bullit.setDir(dir);
+        bullit.setAtk(atk);
         arrList.add(bullit);
-
+            
     }
     public void drawBullits(Graphics g){
         arrList.forEach(item->{
             item.draw(g);
         });
+        for (int i = 0; i < arrList.size(); i++) {
+            Bullit bullit = arrList.get(i);
+            if(!bullit.getVisible()) {
+                Bullit remove = arrList.remove(i);
+                BullitPool.putInBullit(remove);
+            }
+        }
     }
     private void tankStand() {
     }
