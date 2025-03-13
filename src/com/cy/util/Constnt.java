@@ -12,6 +12,8 @@ public class Constnt {
     public static final int GAME_RUN = 3;
     public static final int GAME_OVER = 4;
 
+    public static final int ENEMY_MAX_NUMBER = 10;
+
     public static final String[] MENUS= {
             "开始游戏",
             "继续游戏",

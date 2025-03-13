@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class GameFrame extends Frame implements Runnable {
     public int status;
@@ -15,12 +16,31 @@ public class GameFrame extends Frame implements Runnable {
     public Tank tank;
     public static int titleBarH;
     public static int borderRight;
+    public static int borderLeft;
     private BufferedImage bufferedImage = new BufferedImage(Constnt.GAME_WIDTH,Constnt.GAME_HEIGHT,BufferedImage.TYPE_4BYTE_ABGR);
+    private ArrayList<Tank> tankArrayList = new ArrayList<>();
     public GameFrame() {
         initFrame(Constnt.GAME_TITLE);
         initEvenMonitor();
-        this.tank = new Tank(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 20, 20, 20);
+        this.tank = new Tank(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 50, 50, 50);
         new Thread(this).start();
+        new Thread(){
+            @Override
+            public void run() {
+               while (true){
+                   System.out.println("坦克数量："+tankArrayList.size());
+                    if(tankArrayList.size() < Constnt.ENEMY_MAX_NUMBER) {
+                        Tank tank1 = Tank.createEnemy();
+                        tankArrayList.add(tank1);
+                    }
+                   try {
+                       Thread.sleep(5000);
+                   } catch (InterruptedException e) {
+                       throw new RuntimeException(e);
+                   }
+               }
+            }
+        }.start();
     }
 
     public void initFrame(String title) {
@@ -31,6 +51,7 @@ public class GameFrame extends Frame implements Runnable {
         setResizable(false);
          titleBarH = getInsets().top;
          borderRight = getInsets().right;
+         borderLeft = getInsets().left;
     }
 
     public void initEvenMonitor() {
@@ -127,8 +148,13 @@ public class GameFrame extends Frame implements Runnable {
 //        g.setColor(Color.red);
 //        g.fillRect(0, 0, Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT);
         tank.drawTank(g);
+        drawEnemyTanks(g);
     }
-
+    private void drawEnemyTanks(Graphics g){
+        tankArrayList.forEach(item->{
+            item.drawTank(g);
+        });
+    }
     private void drawAbout(Graphics g) {
     }
 
