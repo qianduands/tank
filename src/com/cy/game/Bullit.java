@@ -50,6 +50,10 @@ public class Bullit {
         }
     }
 
+    public void setVisible(Boolean visible) {
+        isVisible = visible;
+    }
+
     public void draw(Graphics g) {
         logic();
         if(isVisible) g.fillOval(x, y, width, height);

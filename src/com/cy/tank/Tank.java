@@ -181,6 +181,7 @@ public abstract class  Tank {
         bullit.setY(y);
         bullit.setDir(dir);
         bullit.setAtk(atk);
+        bullit.setVisible(true);
         arrList.add(bullit);
 
     }
