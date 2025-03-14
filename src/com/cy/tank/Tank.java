@@ -1,18 +1,19 @@
-package com.cy.game;
+package com.cy.tank;
 
+import com.cy.game.Bullit;
+import com.cy.game.GameFrame;
 import com.cy.util.BullitPool;
 import com.cy.util.Constnt;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class Tank {
+public abstract class  Tank {
     private int x, y;
+
     private int width, height;
     private int speed = 30;
-
 
     public static final int UP = 0;
     public static final int RIGHT = 1;
@@ -28,6 +29,10 @@ public class Tank {
 
     public void setDir(int dir) {
         this.dir = dir;
+    }
+
+    public int getDir() {
+        return dir;
     }
 
     public void setStatus(int status) {
@@ -71,31 +76,45 @@ public class Tank {
         this.height = height;
     }
 
-    public static Tank createEnemy() {
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public static Enemy createEnemy(){
         int x;
         int y = GameFrame.titleBarH + 50;
         int random = (int) (Math.random() * Constnt.GAME_WIDTH);
-        System.out.println(random + ";" + GameFrame.WIDTH);
         if (random < 50 + GameFrame.borderLeft) x = 50 + GameFrame.borderLeft;
         else if (random > -50 + Constnt.GAME_WIDTH - GameFrame.borderRight)
             x = -50 + Constnt.GAME_WIDTH - GameFrame.borderRight;
         else x = random;
-        Tank tank = new Tank(x, y, 50, 50);
-        tank.setEnemy(true);
-        tank.setStatus(STATUS_MOVE);
-        return tank;
-    }
+        Enemy enemy = new Enemy(x, y, 50, 50);
+        enemy.setEnemy(true);
+        enemy.setStatus(STATUS_MOVE);
+        enemy.setDir(DOWN);
+        enemy.setSpeed(15);
+        return enemy;
+    };
 
     public void drawTank(Graphics g) {
         judgeStatus();
         drawBullits(g);
         if (isEnemy) {
-            g.drawImage(enemyTankImages[DOWN], x, y, null);
+//            g.drawImage(enemyTankImages[DOWN], x, y, null);
+            drawEnemy(g);
             return;
         }
-        g.drawImage(tankIamges[dir], x, y, null);
+
+//        g.drawImage(tankIamges[dir], x, y, null);
+        drawHero(g);
     }
 
+    public void drawHero(Graphics g){
+        g.drawImage(tankIamges[dir], x, y, null);
+    }
+    public void drawEnemy(Graphics g){
+        g.drawImage(enemyTankImages[DOWN], x, y, null);
+    }
     private void judgeStatus() {
         switch (status) {
             case STATUS_STAND:
@@ -181,5 +200,11 @@ public class Tank {
 
     private void tankStand() {
     }
+    public int getX() {
+        return x;
+    }
 
+    public int getY() {
+        return y;
+    }
 }

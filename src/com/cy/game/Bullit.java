@@ -1,5 +1,6 @@
 package com.cy.game;
 
+import com.cy.tank.Tank;
 import com.cy.util.Constnt;
 
 import java.awt.*;

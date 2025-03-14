@@ -1,5 +1,8 @@
 package com.cy.game;
 
+import com.cy.tank.Enemy;
+import com.cy.tank.Hero;
+import com.cy.tank.Tank;
 import com.cy.util.*;
 
 import java.awt.*;
@@ -22,7 +25,7 @@ public class GameFrame extends Frame implements Runnable {
     public GameFrame() {
         initFrame(Constnt.GAME_TITLE);
         initEvenMonitor();
-        this.tank = new Tank(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 50, 50, 50);
+        this.tank = new Hero(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 50, 50, 50);
         new Thread(this).start();
         new Thread(){
             @Override
@@ -30,7 +33,7 @@ public class GameFrame extends Frame implements Runnable {
                while (true){
                    System.out.println("坦克数量："+tankArrayList.size());
                     if(tankArrayList.size() < Constnt.ENEMY_MAX_NUMBER) {
-                        Tank tank1 = Tank.createEnemy();
+                        Enemy tank1 = Tank.createEnemy();
                         tankArrayList.add(tank1);
                     }
                    try {

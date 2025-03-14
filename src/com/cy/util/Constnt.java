@@ -14,6 +14,7 @@ public class Constnt {
 
     public static final int ENEMY_MAX_NUMBER = 10;
 
+    public static final double FIRE_PROBABILITY = 0.05;
     public static final String[] MENUS= {
             "开始游戏",
             "继续游戏",
