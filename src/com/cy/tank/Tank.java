@@ -1,9 +1,12 @@
 package com.cy.tank;
 
 import com.cy.game.Bullit;
+import com.cy.game.Explode;
 import com.cy.game.GameFrame;
 import com.cy.util.BullitPool;
 import com.cy.util.Constnt;
+import com.cy.util.ExplodePool;
+import com.cy.util.Util;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -26,6 +29,20 @@ public abstract class  Tank {
 
     private int dir;
     private List<Bullit> arrList = new ArrayList();
+
+    public List<Bullit> getBullitArrList() {
+        return arrList;
+    }
+
+    private Explode explodes;
+
+    public void setExplodes(Explode explodes) {
+        this.explodes = explodes;
+    }
+
+    public Explode getExplodes() {
+        return explodes;
+    }
 
     public void setDir(int dir) {
         this.dir = dir;
@@ -93,6 +110,7 @@ public abstract class  Tank {
         enemy.setStatus(STATUS_MOVE);
         enemy.setDir(DOWN);
         enemy.setSpeed(15);
+        System.out.println("本机："+tankIamges[0].getWidth(null)+",敌机"+enemyTankImages[0].getWidth(null));
         return enemy;
     };
 
@@ -198,7 +216,12 @@ public abstract class  Tank {
             }
         }
     }
+    public void addExplode(Tank tank,Bullit bullit){
 
+        if(Util.isCrash(tank,bullit)){
+            explodes = (ExplodePool.getExplode());
+        }
+    }
     private void tankStand() {
     }
     public int getX() {
@@ -207,5 +230,13 @@ public abstract class  Tank {
 
     public int getY() {
         return y;
+    }
+
+    @Override
+    public String toString() {
+        return "Tank{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }

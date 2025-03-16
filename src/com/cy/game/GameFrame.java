@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameFrame extends Frame implements Runnable {
     public int status;
@@ -36,6 +37,7 @@ public class GameFrame extends Frame implements Runnable {
                         Enemy tank1 = Tank.createEnemy();
                         tankArrayList.add(tank1);
                     }
+
                    try {
                        Thread.sleep(5000);
                    } catch (InterruptedException e) {
@@ -115,7 +117,43 @@ public class GameFrame extends Frame implements Runnable {
         //Constnt.MENUS
         menusIndex = (menusIndex + 1) % Constnt.MENUS.length;
     }
-
+    private void addExplodeByCrash(){
+        //检测英雄机碰到敌人子弹
+        tankArrayList.forEach(item->{
+            List<Bullit> arrList = item.getBullitArrList();
+            for (int i = 0; i < arrList.size(); i++) {
+                tank.addExplode(tank,arrList.get(i));
+            }
+        });
+        //检测敌机碰到英雄机子弹
+        List<Bullit> bullitArrList = tank.getBullitArrList();
+        bullitArrList.forEach(item->{
+            for (int i = 0; i < tankArrayList.size(); i++) {
+                Tank tank1 = tankArrayList.get(i);
+                tank1.addExplode(tank1,item);
+            }
+        });
+    }
+    private void drawExplode(Graphics g){
+        tankArrayList.forEach(item->{
+            Explode explodes = item.getExplodes();
+            if(explodes != null) {
+                if(explodes.getIndex() <= 7) explodes.drawBom(g,item);
+                else{
+                    ExplodePool.putInExplode(explodes);
+                    item.setExplodes(null);
+                }
+            }
+        });
+        Explode explodes = tank.getExplodes();
+        if(explodes != null) {
+            if(explodes.getIndex() <= 7) explodes.drawBom(g,tank);
+            else {
+                ExplodePool.putInExplode(explodes);
+                tank.setExplodes(null);
+            }
+        }
+    }
     private void upPress() {
         menusIndex = (Constnt.MENUS.length + menusIndex - 1) % Constnt.MENUS.length;
     }
@@ -152,6 +190,8 @@ public class GameFrame extends Frame implements Runnable {
 //        g.fillRect(0, 0, Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT);
         tank.drawTank(g);
         drawEnemyTanks(g);
+        addExplodeByCrash();
+        drawExplode(g);
     }
     private void drawEnemyTanks(Graphics g){
         tankArrayList.forEach(item->{

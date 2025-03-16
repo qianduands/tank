@@ -87,4 +87,19 @@ public class Bullit {
         this.speed = speed;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        return "Bullit{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }
