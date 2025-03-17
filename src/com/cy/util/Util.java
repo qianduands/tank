@@ -11,7 +11,7 @@ public class Util {
         int tankRadioY = tank.getY() + 25;
         int bullitRadioX = bullit.getX() + 5;
         int bullitRadioY = bullit.getY() + 5;
-        if (Math.abs(tankRadioX - bullitRadioX) < 30 && Math.abs(tankRadioY - bullitRadioY) < 30) {
+        if (Math.abs(tankRadioX - bullitRadioX) < 30 && Math.abs(tankRadioY - bullitRadioY) < 30 && bullit.getVisible()) {
             System.out.println("jinlai");
             return true;
         }

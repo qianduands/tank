@@ -10,6 +10,7 @@ public class Enemy extends Tank{
     public Enemy(int x, int y, int width, int height) {
         super(x, y, width, height);
         this.time = (int)(System.currentTimeMillis());
+        setColor(Color.red);
     }
     public void drawEnemy(Graphics g) {
         stupidMove();

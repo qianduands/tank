@@ -13,7 +13,7 @@ public class Bullit {
     private int atk;
     private int speed = 60;
     private Boolean isVisible = true;
-
+    private Color color;
     public Boolean getVisible() {
         return isVisible;
     }
@@ -21,11 +21,12 @@ public class Bullit {
     public Bullit() {
     }
 
-    public Bullit(int x, int y, int dir, int atk) {
+    public Bullit(int x, int y, int dir, int atk,Color color) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.atk = atk;
+        this.color = color;
     }
 
 
@@ -56,7 +57,9 @@ public class Bullit {
 
     public void draw(Graphics g) {
         logic();
+        g.setColor(color);
         if(isVisible) g.fillOval(x, y, width, height);
+        g.setColor(Color.white);
     }
 
     public void setWidth(int width) {
@@ -93,6 +96,14 @@ public class Bullit {
 
     public int getY() {
         return y;
+    }
+
+    public int getAtk() {
+        return atk;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     @Override
