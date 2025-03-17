@@ -6,14 +6,14 @@ import java.util.ArrayList;
 
 public class ExplodePool {
     private static final int MAX_EXPLODE = 200;
-    private static ArrayList<Explode> exceptions = new ArrayList<>();
+    private static final ArrayList<Explode> exceptions = new ArrayList<>();
     static {
         for (int i = 0; i < MAX_EXPLODE; i++) {
             exceptions.add(new Explode());
         }
     }
     public static Explode getExplode(){
-        if(exceptions.size() == 0){
+        if(exceptions.isEmpty()){
             exceptions.add(new Explode());
         }
         return exceptions.remove(0);
