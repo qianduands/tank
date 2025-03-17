@@ -29,7 +29,7 @@ public abstract class Tank {
     private Blood blood = new Blood();
     private int dir;
     private int status;
-    private int atk = 10;
+    private int atk = 100;
     private List<Bullit> arrList = new ArrayList();
 
     public List<Bullit> getBullitArrList() {
@@ -182,7 +182,11 @@ public abstract class Tank {
         arrList.add(bullit);
 
     }
-
+    public void returnBullits(){
+        arrList.forEach(item->{
+            BullitPool.putInBullit(item);
+        });
+    }
     public void drawBullits(Graphics g) {
         arrList.forEach(item -> {
             item.draw(g);
@@ -192,6 +196,7 @@ public abstract class Tank {
             if (!bullit.getVisible()) {
                 Bullit remove = arrList.remove(i);
                 BullitPool.putInBullit(remove);
+                i--;
             }
         }
     }
@@ -208,7 +213,9 @@ public abstract class Tank {
         if (hp == 0 || hp - bullit.getAtk() <= 0) hp = 0;
         else hp -= bullit.getAtk();
     }
-
+    public Boolean isDie(){
+        return hp <= 0;
+    }
 
     class Blood {
         private int x, y;
