@@ -24,7 +24,23 @@ public class Explode {
     }
     public void drawBom(Graphics g, Tank tank){
         System.out.println("index"+index);
-        if(index < 7) g.drawImage(images[index],tank.getX(),tank.getY(),null );
+        if(index < 7) g.drawImage(images[index],x,y,null );
         index++;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 }

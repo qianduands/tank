@@ -1,5 +1,7 @@
 package com.cy.game;
 
+import com.cy.map.Brick;
+import com.cy.map.MyMap;
 import com.cy.tank.Enemy;
 import com.cy.tank.Hero;
 import com.cy.tank.Tank;
@@ -21,6 +23,7 @@ public class GameFrame extends Frame implements Runnable {
     public static int titleBarH;
     public static int borderRight;
     public static int borderLeft;
+    public MyMap map;
     private BufferedImage bufferedImage = new BufferedImage(Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
     private Image image;
     private ArrayList<Tank> tankArrayList = new ArrayList<>();
@@ -59,6 +62,7 @@ public class GameFrame extends Frame implements Runnable {
         titleBarH = getInsets().top;
         borderRight = getInsets().right;
         borderLeft = getInsets().left;
+        map = new MyMap(60,60, Constnt.GAME_WIDTH-120, Constnt.GAME_HEIGHT-120);
     }
 
     public void initEvenMonitor() {
@@ -75,7 +79,7 @@ public class GameFrame extends Frame implements Runnable {
 
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_UP:
-                        if(status == Constnt.GAME_RUN) {
+                        if (status == Constnt.GAME_RUN) {
                             tank.setStatus(Tank.STATUS_MOVE);
                             tank.setDir(Tank.UP);
                             break;
@@ -83,7 +87,7 @@ public class GameFrame extends Frame implements Runnable {
                         upPress();
                         break;
                     case KeyEvent.VK_DOWN:
-                        if(status == Constnt.GAME_RUN) {
+                        if (status == Constnt.GAME_RUN) {
                             tank.setStatus(Tank.STATUS_MOVE);
                             tank.setDir(Tank.DOWN);
                             break;
@@ -92,14 +96,14 @@ public class GameFrame extends Frame implements Runnable {
                         System.out.println("down");
                         break;
                     case KeyEvent.VK_LEFT:
-                        if(status == Constnt.GAME_RUN) {
+                        if (status == Constnt.GAME_RUN) {
                             tank.setStatus(Tank.STATUS_MOVE);
                             tank.setDir(Tank.LEFT);
                             break;
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if(status == Constnt.GAME_RUN) {
+                        if (status == Constnt.GAME_RUN) {
                             tank.setStatus(Tank.STATUS_MOVE);
                             tank.setDir(Tank.RIGHT);
                             break;
@@ -109,7 +113,7 @@ public class GameFrame extends Frame implements Runnable {
                         gameRun();
                         break;
                     case KeyEvent.VK_SPACE:
-                        if(status == Constnt.GAME_RUN) {
+                        if (status == Constnt.GAME_RUN) {
                             tank.fire();
                             break;
                         }
@@ -131,7 +135,7 @@ public class GameFrame extends Frame implements Runnable {
         System.out.println();
         if (status == Constnt.GAME_OVER) {
             status = Constnt.GAME_MENU;
-            System.out.println("游戏状态："+status);
+            System.out.println("游戏状态：" + status);
             return;
         }
         if (menusIndex == 0) {
@@ -151,7 +155,7 @@ public class GameFrame extends Frame implements Runnable {
             tankArrayList.forEach(item -> {
                 List<Bullit> arrList = item.getBullitArrList();
                 for (int i = 0; i < arrList.size(); i++) {
-                    tank.addExplode(tank, arrList.get(i));
+                    tank.addExplode(item, arrList.get(i));
                 }
             });
             //检测敌机碰到英雄机子弹
@@ -159,32 +163,52 @@ public class GameFrame extends Frame implements Runnable {
             bullitArrList.forEach(item -> {
                 for (int i = 0; i < tankArrayList.size(); i++) {
                     Tank tank1 = tankArrayList.get(i);
-                    tank1.addExplode(tank1, item);
+                    tank1.addExplode(tank, item);
                 }
             });
         }
-
-
+        againstBrick();
     }
-
+    private void againstBrick(){
+        List<Bullit> bullitArrList = tank.getBullitArrList();
+        ArrayList<Brick> brickArrayList = map.getBrickArrayList();
+        bullitArrList.forEach(item -> {
+            for (int i = 0; i < brickArrayList.size(); i++) {
+                Brick brick = brickArrayList.get(i);
+                tank.addExplode(brick, item);
+            }
+        });
+    }
     private void drawExplode(Graphics g) {
         tankArrayList.forEach(item -> {
-            Explode explodes = item.getExplodes();
-            if (explodes != null) {
+            List<Explode> explodesList = item.getExplodesList();
+//            if (explodes != null) {
+//                if (explodes.getIndex() <= 7) explodes.drawBom(g, item);
+//                else {
+//                    ExplodePool.putInExplode(explodes);
+//                    item.setExplodes(null);
+//                }
+//            }
+            for (int i = 0; i < explodesList.size(); i++) {
+                Explode explodes = explodesList.get(i);
                 if (explodes.getIndex() <= 7) explodes.drawBom(g, item);
                 else {
                     ExplodePool.putInExplode(explodes);
-                    item.setExplodes(null);
+//                    item.setExplodes(null);
+                    explodesList.remove(i);
+                    i--;
                 }
             }
         });
         if (tank != null) {
-            Explode explodes = tank.getExplodes();
-            if (explodes != null) {
+            List<Explode> explodesList = tank.getExplodesList();
+            for (int i = 0; i < explodesList.size(); i++) {
+                Explode explodes = explodesList.get(i);
                 if (explodes.getIndex() <= 7) explodes.drawBom(g, tank);
                 else {
                     ExplodePool.putInExplode(explodes);
-                    tank.setExplodes(null);
+                    explodesList.remove(i);
+                    i--;
                 }
             }
         }
@@ -242,8 +266,9 @@ public class GameFrame extends Frame implements Runnable {
             status = Constnt.GAME_OVER;
         }
     }
-    public void reSetGame(){
-        if(tank == null) tank = new Hero(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 50, 50, 50);
+
+    public void reSetGame() {
+        if (tank == null) tank = new Hero(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 50, 50, 50);
         else tank.returnBullits();
         for (int i = 0; i < tankArrayList.size(); i++) {
             Tank tank1 = tankArrayList.get(i);
@@ -252,9 +277,11 @@ public class GameFrame extends Frame implements Runnable {
             i--;
         }
     }
+
     private void drawRun(Graphics g) {
 //        g.setColor(Color.red);
 //        g.fillRect(0, 0, Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT);
+        map.draw(g);
         if (tank != null) tank.drawTank(g);
         addExplodeByCrash();
         drawEnemyTanks(g);

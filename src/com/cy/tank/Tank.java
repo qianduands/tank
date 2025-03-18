@@ -3,6 +3,7 @@ package com.cy.tank;
 import com.cy.game.Bullit;
 import com.cy.game.Explode;
 import com.cy.game.GameFrame;
+import com.cy.map.Brick;
 import com.cy.util.BullitPool;
 import com.cy.util.Constnt;
 import com.cy.util.ExplodePool;
@@ -29,15 +30,15 @@ public abstract class Tank {
     private Blood blood = new Blood();
     private int dir;
     private int status;
-    private int atk = 100;
+    private int atk = 10;
     private List<Bullit> arrList = new ArrayList();
+    private List<Explode> explodesList = new ArrayList();
 
     public List<Bullit> getBullitArrList() {
         return arrList;
     }
 
     private Explode explodes;
-
 
 
     private Boolean isEnemy = false;
@@ -182,11 +183,13 @@ public abstract class Tank {
         arrList.add(bullit);
 
     }
-    public void returnBullits(){
-        arrList.forEach(item->{
+
+    public void returnBullits() {
+        arrList.forEach(item -> {
             BullitPool.putInBullit(item);
         });
     }
+
     public void drawBullits(Graphics g) {
         arrList.forEach(item -> {
             item.draw(g);
@@ -203,17 +206,27 @@ public abstract class Tank {
 
     public void addExplode(Tank tank, Bullit bullit) {
 
-        if (Util.isCrash(tank, bullit)) {
-            explodes = (ExplodePool.getExplode());
+        if (Util.isCrash(this, bullit)) {
+//            tank.explodes = (ExplodePool.getExplode(this));
+            tank.explodesList.add(ExplodePool.getExplode(this));
             decrease(bullit);
             bullit.setVisible(false);
         }
     }
-    public void decrease(Bullit bullit){
+
+    public void addExplode(Brick brick, Bullit bullit) {
+        if (Util.isBrickCrash(brick, bullit)) {
+            explodesList.add(ExplodePool.getExplode(brick));
+            bullit.setVisible(false);
+        }
+    }
+
+    public void decrease(Bullit bullit) {
         if (hp == 0 || hp - bullit.getAtk() <= 0) hp = 0;
         else hp -= bullit.getAtk();
     }
-    public Boolean isDie(){
+
+    public Boolean isDie() {
         return hp <= 0;
     }
 
@@ -246,17 +259,18 @@ public abstract class Tank {
             g.setColor(Color.green);
             g.fillRect(x, y, width, height);
             g.setColor(Color.red);
-            g.fillRect(x, y, (int)((double)hp / MAX_BlOOD * width), height);
+            g.fillRect(x, y, (int) ((double) hp / MAX_BlOOD * width), height);
             g.setColor(Color.white);
-            System.out.println("血量剩余："+hp / MAX_BlOOD);
+            System.out.println("血量剩余：" + hp / MAX_BlOOD);
         }
     }
+
     public void setExplodes(Explode explodes) {
         this.explodes = explodes;
     }
 
-    public Explode getExplodes() {
-        return explodes;
+    public List<Explode> getExplodesList() {
+        return explodesList;
     }
 
     public void setDir(int dir) {
@@ -282,6 +296,7 @@ public abstract class Tank {
     public void setEnemy(Boolean enemy) {
         isEnemy = enemy;
     }
+
     private void tankStand() {
     }
 

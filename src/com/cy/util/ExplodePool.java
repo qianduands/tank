@@ -1,6 +1,9 @@
 package com.cy.util;
 
+import com.cy.game.Bullit;
 import com.cy.game.Explode;
+import com.cy.map.Brick;
+import com.cy.tank.Tank;
 
 import java.util.ArrayList;
 
@@ -12,14 +15,27 @@ public class ExplodePool {
             exceptions.add(new Explode());
         }
     }
-    public static Explode getExplode(){
+    public static Explode getExplode(Tank tank){
         if(exceptions.isEmpty()){
             exceptions.add(new Explode());
         }
-        return exceptions.remove(0);
+        Explode remove = exceptions.remove(0);
+        remove.setIndex(0);
+        remove.setX(tank.getX());
+        remove.setY(tank.getY());
+        return remove;
+    }
+    public static Explode getExplode(Brick brick){
+        if(exceptions.isEmpty()){
+            exceptions.add(new Explode());
+        }
+        Explode remove = exceptions.remove(0);
+        remove.setIndex(0);
+        remove.setX(brick.getX());
+        remove.setY(brick.getY());
+        return remove;
     }
     public static void putInExplode(Explode explode){
-        explode.setIndex(0);
         exceptions.add(explode);
     }
 }
