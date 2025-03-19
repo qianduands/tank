@@ -26,7 +26,7 @@ public class Util {
         for (Brick brick : brickList) {
             int brickRadioX = brick.getX() + 30;
             int brickRadioY = brick.getY() + 30;
-            if (Math.abs(brickRadioX - radioX) < 60 && Math.abs(brickRadioY - radioY) < 60) {
+            if (Math.abs(brickRadioX - radioX) < 60 && Math.abs(brickRadioY - radioY) < 60 && brick.getVisible()) {
                 return true;
             }
         }
@@ -38,8 +38,20 @@ public class Util {
         int brickRadioY = brick.getY() + 30;
         int bullitRadioX = bullit.getX() + 5;
         int bullitRadioY = bullit.getY() + 5;
-        if (Math.abs(brickRadioX - bullitRadioX) < 35 && Math.abs(brickRadioY - bullitRadioY) < 35 && bullit.getVisible()) {
+        if (Math.abs(brickRadioX - bullitRadioX) < 35 && Math.abs(brickRadioY - bullitRadioY) < 35 && bullit.getVisible() && brick.getVisible()) {
             return true;
+        }
+        return false;
+    }
+    public static Boolean isTankAndBrickCrash(List<Brick> brickList,int x,int y){
+        int radioX = x + 25;
+        int radioY = y + 25;
+        for (Brick brick : brickList) {
+            int brickRadioX = brick.getX() + 30;
+            int brickRadioY = brick.getY() + 30;
+            if (Math.abs(brickRadioX - radioX) < 55 && Math.abs(brickRadioY - radioY) < 55 && brick.getVisible()) {
+                return true;
+            }
         }
         return false;
     }

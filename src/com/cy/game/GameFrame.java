@@ -62,7 +62,7 @@ public class GameFrame extends Frame implements Runnable {
         titleBarH = getInsets().top;
         borderRight = getInsets().right;
         borderLeft = getInsets().left;
-        map = new MyMap(60,60, Constnt.GAME_WIDTH-120, Constnt.GAME_HEIGHT-120);
+        map = new MyMap(60, 60, Constnt.GAME_WIDTH - 120, Constnt.GAME_HEIGHT - 120);
     }
 
     public void initEvenMonitor() {
@@ -169,16 +169,22 @@ public class GameFrame extends Frame implements Runnable {
         }
         againstBrick();
     }
-    private void againstBrick(){
+
+    private void againstBrick() {
         List<Bullit> bullitArrList = tank.getBullitArrList();
         ArrayList<Brick> brickArrayList = map.getBrickArrayList();
         bullitArrList.forEach(item -> {
-            for (int i = 0; i < brickArrayList.size(); i++) {
-                Brick brick = brickArrayList.get(i);
-                tank.addExplode(brick, item);
-            }
+            tank.addExplode(brickArrayList, item);
         });
+        for (int i = 0; i < tankArrayList.size(); i++) {
+            Tank tank1 = tankArrayList.get(i);
+            List<Bullit> bullitArrList1 = tank1.getBullitArrList();
+            bullitArrList1.forEach(item -> {
+                tank1.addExplode(brickArrayList, item);
+            });
+        }
     }
+
     private void drawExplode(Graphics g) {
         tankArrayList.forEach(item -> {
             List<Explode> explodesList = item.getExplodesList();
@@ -282,7 +288,7 @@ public class GameFrame extends Frame implements Runnable {
 //        g.setColor(Color.red);
 //        g.fillRect(0, 0, Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT);
         map.draw(g);
-        if (tank != null) tank.drawTank(g);
+        if (tank != null) tank.drawTank(g,map.getBrickArrayList());
         addExplodeByCrash();
         drawEnemyTanks(g);
         drawExplode(g);
@@ -290,8 +296,9 @@ public class GameFrame extends Frame implements Runnable {
     }
 
     private void drawEnemyTanks(Graphics g) {
+        ArrayList<Brick> brickArrayList = map.getBrickArrayList();
         tankArrayList.forEach(item -> {
-            item.drawTank(g);
+            item.drawTank(g,brickArrayList);
         });
     }
 

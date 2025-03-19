@@ -17,7 +17,7 @@ public abstract class Tank {
     private int x, y;
     private int hp = 100;
     private int width, height;
-    private int speed = 30;
+    private int speed = 20;
     private Color color = Color.red;
     public static final int UP = 0;
     public static final int RIGHT = 1;
@@ -94,8 +94,8 @@ public abstract class Tank {
 
     ;
 
-    public void drawTank(Graphics g) {
-        judgeStatus();
+    public void drawTank(Graphics g,ArrayList<Brick> brickArrayList) {
+        judgeStatus(brickArrayList);
         drawBullits(g);
         if (isEnemy) drawEnemy(g);
         else drawHero(g);
@@ -110,13 +110,13 @@ public abstract class Tank {
         g.drawImage(enemyTankImages[DOWN], x, y, null);
     }
 
-    private void judgeStatus() {
+    private void judgeStatus(ArrayList<Brick> brickArrayList) {
         switch (status) {
             case STATUS_STAND:
                 tankStand();
                 break;
             case STATUS_MOVE:
-                tankMove();
+                tankMove(brickArrayList);
                 break;
             case STATUS_DEAD:
                 tankDead();
@@ -127,7 +127,8 @@ public abstract class Tank {
 
     }
 
-    private void tankMove() {
+    private void tankMove(ArrayList<Brick> brickArrayList) {
+        if(isCollision(brickArrayList)) return;
         switch (dir) {
             case UP:
                 if (y < GameFrame.titleBarH + height) y = GameFrame.titleBarH;
@@ -151,7 +152,25 @@ public abstract class Tank {
         blood.setX(x);
         blood.setY(y - 10);
     }
-
+    private Boolean isCollision(ArrayList<Brick> brickArrayList){
+        int x1 = x;
+        int y1 = y;
+        switch (dir) {
+            case UP:
+                y1 -= speed;
+                break;
+            case RIGHT:
+                 x1 += speed;
+                break;
+            case DOWN:
+                 y1 += speed;
+                break;
+            case LEFT:
+                x1 -= speed;
+                break;
+        }
+        return Util.isTankAndBrickCrash(brickArrayList, x1, y1);
+    }
     public void fire() {
         int x = 0;
         int y = 0;
@@ -214,11 +233,14 @@ public abstract class Tank {
         }
     }
 
-    public void addExplode(Brick brick, Bullit bullit) {
-        if (Util.isBrickCrash(brick, bullit)) {
-            explodesList.add(ExplodePool.getExplode(brick));
-            bullit.setVisible(false);
-        }
+    public void addExplode(ArrayList<Brick> brickArrayList, Bullit bullit) {
+        brickArrayList.forEach(item->{
+            if (Util.isBrickCrash(item, bullit)) {
+                item.decreaseHp(bullit);
+                explodesList.add(ExplodePool.getExplode(item));
+                bullit.setVisible(false);
+            }
+        });
     }
 
     public void decrease(Bullit bullit) {

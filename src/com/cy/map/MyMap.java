@@ -34,10 +34,8 @@ public class MyMap {
    }
    public void draw(Graphics g){
        brickArrayList.forEach(brick -> {
-           brick.draw(g);
-
+           if(brick.getVisible()) brick.draw(g);
        });
-
    }
 
     public ArrayList<Brick> getBrickArrayList() {
