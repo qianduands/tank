@@ -1,6 +1,7 @@
 package com.cy.game;
 
 import com.cy.map.Brick;
+import com.cy.map.Home;
 import com.cy.map.MyMap;
 import com.cy.tank.Enemy;
 import com.cy.tank.Hero;
@@ -13,8 +14,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GameFrame extends Frame implements Runnable {
     public int status;
@@ -23,15 +33,23 @@ public class GameFrame extends Frame implements Runnable {
     public static int titleBarH;
     public static int borderRight;
     public static int borderLeft;
+
+    public static final int TANK_START_X = (Constnt.GAME_WIDTH - 200 >> 1) - 60;
+    public static final int TANK_START_Y = Constnt.GAME_HEIGHT - 60;
     public MyMap map;
+    private Home home;
     private BufferedImage bufferedImage = new BufferedImage(Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
     private Image image;
     private ArrayList<Tank> tankArrayList = new ArrayList<>();
-
+    private Checkpoint checkpoint = new Checkpoint();
+    private int currentPoint;
+    private int destroyTank;
+    private int needDestroyTank;
     public GameFrame() {
         initFrame(Constnt.GAME_TITLE);
         initEvenMonitor();
-        this.tank = new Hero(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 50, 50, 50);
+        this.tank = new Hero(TANK_START_X, TANK_START_Y, 50, 50);
+        this.home = new Home(Constnt.GAME_WIDTH - 200 >> 1, Constnt.GAME_HEIGHT - 60);
         new Thread(this).start();
         new Thread() {
             @Override
@@ -62,7 +80,35 @@ public class GameFrame extends Frame implements Runnable {
         titleBarH = getInsets().top;
         borderRight = getInsets().right;
         borderLeft = getInsets().left;
-        map = new MyMap(60, 60, Constnt.GAME_WIDTH - 120, Constnt.GAME_HEIGHT - 120);
+        map = new MyMap(80, 80, Constnt.GAME_WIDTH - 120, Constnt.GAME_HEIGHT - 120);
+//        initMap();
+        try {
+            nextPoint();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(map.getBrickArrayList());
+    }
+    public void initMap(){
+        map.addBrickRow(100,120,70,5,8);
+    }
+
+    public void nextPoint() throws IOException {
+        if(!Util.isGoNext(currentPoint,destroyTank,needDestroyTank)) return;
+        currentPoint+=1;
+        destroyTank = 0;
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("point"+currentPoint));
+        checkpoint.setPoint(properties.getProperty("point"));
+        checkpoint.setDestroyNumber(Integer.parseInt(properties.getProperty("destroyNumber")));
+        checkpoint.setDisCol(Integer.parseInt(properties.getProperty("disCol")));
+        checkpoint.setRow(Integer.parseInt(properties.getProperty("row")));
+        checkpoint.setNumberInRow(Integer.parseInt(properties.getProperty("numberInRow")));
+        checkpoint.setMapStartX(Integer.parseInt(properties.getProperty("mapStartX")));
+        checkpoint.setMapStartY(Integer.parseInt(properties.getProperty("mapStartY")));
+        map.resetMap();
+        map.addBrickRow(checkpoint.getMapStartX(),checkpoint.getMapStartY(),checkpoint.getDisCol(),checkpoint.getNumberInRow(),checkpoint.getRow());
+        needDestroyTank = checkpoint.getDestroyNumber();
     }
 
     public void initEvenMonitor() {
@@ -168,33 +214,39 @@ public class GameFrame extends Frame implements Runnable {
             });
         }
         againstBrick();
+        giveBackBrick();
     }
 
     private void againstBrick() {
         List<Bullit> bullitArrList = tank.getBullitArrList();
-        ArrayList<Brick> brickArrayList = map.getBrickArrayList();
+        ArrayList<Brick> mergedList = new ArrayList<>();
+        mergedList.addAll(map.getBrickArrayList());
+        mergedList.addAll(Arrays.asList(home.getBrickArray()));
         bullitArrList.forEach(item -> {
-            tank.addExplode(brickArrayList, item);
+            tank.addExplode(mergedList, item);
         });
         for (int i = 0; i < tankArrayList.size(); i++) {
             Tank tank1 = tankArrayList.get(i);
             List<Bullit> bullitArrList1 = tank1.getBullitArrList();
             bullitArrList1.forEach(item -> {
-                tank1.addExplode(brickArrayList, item);
+                tank1.addExplode(mergedList, item);
             });
         }
     }
-
+    public void giveBackBrick(){
+        ArrayList<Brick> brickArrayList = map.getBrickArrayList();
+        for (int i = 0; i < brickArrayList.size(); i++) {
+            Brick brick = brickArrayList.get(i);
+            if(brick.getHp() <= 0) {
+                brickArrayList.remove(i);
+                i--;
+            }
+        }
+       //暂时不回收home的砖块
+    }
     private void drawExplode(Graphics g) {
         tankArrayList.forEach(item -> {
             List<Explode> explodesList = item.getExplodesList();
-//            if (explodes != null) {
-//                if (explodes.getIndex() <= 7) explodes.drawBom(g, item);
-//                else {
-//                    ExplodePool.putInExplode(explodes);
-//                    item.setExplodes(null);
-//                }
-//            }
             for (int i = 0; i < explodesList.size(); i++) {
                 Explode explodes = explodesList.get(i);
                 if (explodes.getIndex() <= 7) explodes.drawBom(g, item);
@@ -264,6 +316,7 @@ public class GameFrame extends Frame implements Runnable {
             if (tank1.isDie()) {
                 tank1.returnBullits();
                 tankArrayList.remove(i);
+                destroyTank++;
                 i--;
             }
         }
@@ -272,27 +325,57 @@ public class GameFrame extends Frame implements Runnable {
             status = Constnt.GAME_OVER;
         }
     }
-
+    public void overByHomeDestroy(){
+        if(home.isHomeDestroy()){
+            status = Constnt.GAME_OVER;
+        }
+    }
     public void reSetGame() {
         if (tank == null) tank = new Hero(Constnt.GAME_WIDTH >> 1, Constnt.GAME_HEIGHT - 50, 50, 50);
-        else tank.returnBullits();
+        else {
+            tank.returnBullits();
+            resetTankPosition();
+        }
         for (int i = 0; i < tankArrayList.size(); i++) {
             Tank tank1 = tankArrayList.get(i);
             tank1.returnBullits();
             tankArrayList.remove(i);
             i--;
         }
+        resetMapAndHome();
     }
-
+    public void resetMapAndHome(){
+        map.resetMap();
+        initMap();
+        home.initHome();
+    }
+    public void resetTankPosition(){
+        if(tank != null){
+            tank.setX(TANK_START_X);
+            tank.setY(TANK_START_Y);
+        }
+    }
     private void drawRun(Graphics g) {
 //        g.setColor(Color.red);
 //        g.fillRect(0, 0, Constnt.GAME_WIDTH, Constnt.GAME_HEIGHT);
-        map.draw(g);
-        if (tank != null) tank.drawTank(g,map.getBrickArrayList());
+        home.draw(g);
+        if (tank != null) {
+            ArrayList<Brick> mergedList = new ArrayList<>();
+            mergedList.addAll(map.getBrickArrayList());
+            mergedList.addAll(Arrays.asList(home.getBrickArray()));
+            tank.drawTank(g, mergedList);
+        }
         addExplodeByCrash();
         drawEnemyTanks(g);
-        drawExplode(g);
         removeTank();
+        map.draw(g);
+        drawExplode(g);
+        overByHomeDestroy();
+        try {
+            nextPoint();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void drawEnemyTanks(Graphics g) {

@@ -38,7 +38,7 @@ public class Util {
         int brickRadioY = brick.getY() + 30;
         int bullitRadioX = bullit.getX() + 5;
         int bullitRadioY = bullit.getY() + 5;
-        if (Math.abs(brickRadioX - bullitRadioX) < 35 && Math.abs(brickRadioY - bullitRadioY) < 35 && bullit.getVisible() && brick.getVisible()) {
+        if (Math.abs(brickRadioX - bullitRadioX) < 35 && Math.abs(brickRadioY - bullitRadioY) < 35 && bullit.getVisible() && brick.getVisible() && brick.getType() != Brick.COVER) {
             return true;
         }
         return false;
@@ -49,10 +49,13 @@ public class Util {
         for (Brick brick : brickList) {
             int brickRadioX = brick.getX() + 30;
             int brickRadioY = brick.getY() + 30;
-            if (Math.abs(brickRadioX - radioX) < 55 && Math.abs(brickRadioY - radioY) < 55 && brick.getVisible()) {
+            if (Math.abs(brickRadioX - radioX) < 55 && Math.abs(brickRadioY - radioY) < 55 && brick.getVisible() && brick.getType() != Brick.COVER) {
                 return true;
             }
         }
         return false;
+    }
+    public static Boolean isGoNext(int point,int destroy,int needDestroyTank){
+        return point == 0 || destroy == needDestroyTank;
     }
 }

@@ -94,7 +94,7 @@ public abstract class Tank {
 
     ;
 
-    public void drawTank(Graphics g,ArrayList<Brick> brickArrayList) {
+    public void drawTank(Graphics g, ArrayList<Brick> brickArrayList) {
         judgeStatus(brickArrayList);
         drawBullits(g);
         if (isEnemy) drawEnemy(g);
@@ -128,7 +128,7 @@ public abstract class Tank {
     }
 
     private void tankMove(ArrayList<Brick> brickArrayList) {
-        if(isCollision(brickArrayList)) return;
+        if (isCollision(brickArrayList)) return;
         switch (dir) {
             case UP:
                 if (y < GameFrame.titleBarH + height) y = GameFrame.titleBarH;
@@ -152,7 +152,8 @@ public abstract class Tank {
         blood.setX(x);
         blood.setY(y - 10);
     }
-    private Boolean isCollision(ArrayList<Brick> brickArrayList){
+
+    private Boolean isCollision(ArrayList<Brick> brickArrayList) {
         int x1 = x;
         int y1 = y;
         switch (dir) {
@@ -160,10 +161,10 @@ public abstract class Tank {
                 y1 -= speed;
                 break;
             case RIGHT:
-                 x1 += speed;
+                x1 += speed;
                 break;
             case DOWN:
-                 y1 += speed;
+                y1 += speed;
                 break;
             case LEFT:
                 x1 -= speed;
@@ -171,6 +172,7 @@ public abstract class Tank {
         }
         return Util.isTankAndBrickCrash(brickArrayList, x1, y1);
     }
+
     public void fire() {
         int x = 0;
         int y = 0;
@@ -234,7 +236,7 @@ public abstract class Tank {
     }
 
     public void addExplode(ArrayList<Brick> brickArrayList, Bullit bullit) {
-        brickArrayList.forEach(item->{
+        brickArrayList.forEach(item -> {
             if (Util.isBrickCrash(item, bullit)) {
                 item.decreaseHp(bullit);
                 explodesList.add(ExplodePool.getExplode(item));
@@ -336,6 +338,14 @@ public abstract class Tank {
 
     public Color getColor() {
         return color;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     @Override
